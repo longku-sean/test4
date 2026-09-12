@@ -179,7 +179,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
         .other-btn {
             padding: 0.8rem 1.8rem;
@@ -203,45 +203,6 @@
             border-color: #3a9ec4;
             color: white;
             box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.6);
-        }
-
-        .other-password-wrap {
-            display: flex;
-            gap: 0.6rem;
-            margin-bottom: 0.5rem;
-        }
-        .other-password-wrap input {
-            flex: 1;
-            padding: 0.9rem 1.2rem;
-            border-radius: 16px;
-            border: 2px solid #33495a;
-            background: #22323f;
-            color: #e8f1f8;
-            font-size: 1.1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .other-password-wrap input:focus {
-            border-color: #4db3d8;
-        }
-        .other-password-wrap input::placeholder {
-            color: #6b8299;
-        }
-        .other-password-wrap button {
-            padding: 0.9rem 1.6rem;
-            border-radius: 16px;
-            border: none;
-            background: #3a9ec4;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        .other-password-wrap button:hover {
-            background: #5cc2e6;
-            transform: translateY(-2px);
         }
 
         h1 {
@@ -694,7 +655,6 @@
             .result-q { min-width: 100%; }
             .number-grid { grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); }
             .password-wrap { flex-direction: column; }
-            .other-password-wrap { flex-direction: column; }
         }
     </style>
 </head>
@@ -725,14 +685,8 @@
             <div class="class6-title">請選擇對象</div>
             <div class="other-options">
                 <div class="other-btn" id="otherBtnYi">佾</div>
-            </div>
-            <div id="otherPasswordArea" style="display:none;">
-                <div class="class6-title">請輸入密碼</div>
-                <div class="other-password-wrap">
-                    <input type="text" id="otherPasswordInput" placeholder="請輸入密碼..." maxlength="20" />
-                    <button type="button" id="otherPasswordBtn">解鎖</button>
-                </div>
-                <div class="password-msg" id="otherPasswordMsg"></div>
+                <div class="other-btn" id="otherBtnWang">王毓閔</div>
+                <div class="other-btn" id="otherBtnKen">Ken</div>
             </div>
         </div>
 
@@ -809,10 +763,8 @@
             var passwordMsg = document.getElementById('passwordMsg');
 
             var otherBtnYi = document.getElementById('otherBtnYi');
-            var otherPasswordArea = document.getElementById('otherPasswordArea');
-            var otherPasswordInput = document.getElementById('otherPasswordInput');
-            var otherPasswordBtn = document.getElementById('otherPasswordBtn');
-            var otherPasswordMsg = document.getElementById('otherPasswordMsg');
+            var otherBtnWang = document.getElementById('otherBtnWang');
+            var otherBtnKen = document.getElementById('otherBtnKen');
 
             var quizArea = document.getElementById('quizArea');
 
@@ -821,7 +773,7 @@
             var otherTarget = null;
             var isUnlocked = false;
 
-            // ★ 已填寫過答案的座號（加入 20）
+            // ★ 已填寫過答案的座號
             var availableNumbers = [1, 4, 11, 20, 27];
 
             // 所有座號（1~28，刪掉 10 和 22）
@@ -942,31 +894,29 @@
                     all[k].classList.remove('selected');
                 }
                 otherBtnYi.classList.add('selected');
-                otherPasswordArea.style.display = 'block';
-                otherPasswordMsg.classList.remove('show');
-                otherPasswordMsg.textContent = '';
+                showQuiz();
             });
 
-            // ========== 其他區密碼解鎖 ==========
-            function tryOtherUnlock() {
-                var val = otherPasswordInput.value.trim();
-
-                otherPasswordMsg.classList.remove('show');
-                otherPasswordMsg.textContent = '';
-
-                if (val !== '陳佾君') {
-                    showPasswordError(otherPasswordMsg, otherPasswordInput);
-                    return;
+            // ========== 其他區：選擇「王毓閔」 ==========
+            otherBtnWang.addEventListener('click', function() {
+                otherTarget = '王毓閔';
+                var all = document.querySelectorAll('.other-btn');
+                for (var k = 0; k < all.length; k++) {
+                    all[k].classList.remove('selected');
                 }
-
-                otherPasswordInput.value = '';
-                otherPasswordMsg.classList.remove('show');
+                otherBtnWang.classList.add('selected');
                 showQuiz();
-            }
+            });
 
-            otherPasswordBtn.addEventListener('click', tryOtherUnlock);
-            otherPasswordInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') tryOtherUnlock();
+            // ========== 其他區：選擇「小Ken」 ==========
+            otherBtnKen.addEventListener('click', function() {
+                otherTarget = '小Ken';
+                var all = document.querySelectorAll('.other-btn');
+                for (var k = 0; k < all.length; k++) {
+                    all[k].classList.remove('selected');
+                }
+                otherBtnKen.classList.add('selected');
+                showQuiz();
             });
 
             // 切到 6班
@@ -992,10 +942,6 @@
                 for (var k = 0; k < all.length; k++) {
                     all[k].classList.remove('selected');
                 }
-                otherPasswordArea.style.display = 'none';
-                otherPasswordMsg.classList.remove('show');
-                otherPasswordMsg.textContent = '';
-                otherPasswordInput.value = '';
                 var otherBtns = document.querySelectorAll('.other-btn');
                 for (var k = 0; k < otherBtns.length; k++) {
                     otherBtns[k].classList.remove('selected');
@@ -1009,21 +955,21 @@
             // ========== 題庫 ==========
             var originalQuestions = [
                 { id: 1,  text: "我最喜歡的顏色是？",       options: ["藍色", "紅色", "綠色", "紫色", "黃色", "黑色", "白色", "淡藍綠色"] },
-                { id: 2,  text: "我的生日在哪個月份？",     options: ["3月", "5月", "7月", "8月", "9月", "10月", "12月"] },
-                { id: 3,  text: "我最常喝哪種飲料？",       options: ["咖啡", "綠茶", "奶茶", "可樂", "水", "仙草凍"] },
+                { id: 2,  text: "我的生日在哪個月份？",     options: ["1月", "3月", "5月", "7月", "8月", "9月", "10月", "12月"] },
+                { id: 3,  text: "我最常喝哪種飲料？",       options: ["咖啡", "綠茶", "奶茶", "可樂", "水", "仙草凍", "拿鐵", "豆漿"] },
                 { id: 4,  text: "我養過什麼寵物？",         options: ["狗", "貓", "倉鼠", "魚", "沒養過", "狗 貓", "蜜袋鼯"] },
                 { id: 5,  text: "我最喜歡的季節？",         options: ["春天", "夏天", "秋天", "冬天"] },
-                { id: 6,  text: "我比較喜歡哪種食物？",     options: ["拉麵", "披薩", "壽司", "牛排", "炸雞", "仙草", "烏龍麵", "奶茶", "都喜歡", "水", "漢堡"] },
+                { id: 6,  text: "我比較喜歡哪種食物？",     options: ["拉麵", "披薩", "壽司", "牛排", "炸雞", "仙草", "烏龍麵", "奶茶", "都喜歡", "水", "漢堡", "豆漿"] },
                 { id: 7,  text: "我的血型是？",             options: ["A型", "B型", "O型", "AB型"] },
                 { id: 8,  text: "我最想去的國家？",         options: ["日本", "法國", "義大利", "冰島", "中國大陸", "韓國", "中國"] },
                 { id: 9,  text: "我最喜歡的電影類型？",     options: ["科幻", "喜劇", "恐怖", "愛情"] },
-                { id: 10, text: "我通常幾點睡覺？",         options: ["10點前", "11點左右", "十二點半", "凌晨1點", "凌晨3點後", "10 30"] },
-                { id: 11, text: "我最擅長的科目？",         options: ["數學", "英文", "歷史", "美術", "社會、國文", "表藝", "體育", "電腦"] },
+                { id: 10, text: "我通常幾點睡覺？",         options: ["10點前", "11點左右", "十二點半", "凌晨1點", "凌晨3點後", "10 30", "11～5"] },
+                { id: 11, text: "我最擅長的科目？",         options: ["數學", "英文", "歷史", "美術", "社會、國文", "表藝", "體育", "電腦", "生活科技"] },
                 { id: 12, text: "我喜歡的運動是？",         options: ["籃球", "游泳", "跑步", "羽毛球", "跳舞", "不喜歡運動"] },
                 { id: 13, text: "我最害怕什麼？",           options: ["蜘蛛", "高處", "黑暗", "孤獨", "人類"] },
                 { id: 14, text: "我手機的品牌？",           options: ["Apple", "Samsung", "Sony", "小米", "vivo", "OPPO"] },
-                { id: 15, text: "我喜歡的音樂類型？",       options: ["流行", "搖滾", "爵士", "古典", "Kpop", "紅歌"] },
-                { id: 16, text: "我早餐通常吃什麼？",       options: ["麵包", "蛋餅", "麥片", "不吃", "吐司", "漢堡"] },
+                { id: 15, text: "我喜歡的音樂類型？",       options: ["流行", "搖滾", "爵士", "古典", "Kpop", "紅歌", "日文", "emo"] },
+                { id: 16, text: "我早餐通常吃什麼？",       options: ["麵包", "蛋餅", "麥片", "不吃", "吐司", "漢堡", "🥚"] },
                 { id: 17, text: "我的星座是？",             options: ["牡羊", "金牛", "巨蟹", "獅子", "射手", "摩羯", "處女"] },
                 { id: 18, text: "我最喜歡的節日？",         options: ["聖誕節", "新年", "中秋節", "萬聖節"] },
                 { id: 19, text: "我喜歡哪種天氣？",         options: ["晴天", "雨天", "陰天", "下雪"] },
@@ -1062,7 +1008,6 @@
                 16: "蛋餅", 17: "金牛", 18: "新年", 19: "下雪", 20: "樹懶"
             };
 
-            // ★ 20 號的答案
             var answers_20 = {
                 1: "綠色", 2: "12月", 3: "水", 4: "狗", 5: "冬天",
                 6: "水", 7: "B型", 8: "中國", 9: "喜劇", 10: "10 30",
@@ -1078,6 +1023,22 @@
                 16: "麵包", 17: "獅子", 18: "中秋節", 19: "陰天", 20: "獅子"
             };
 
+            // ★ 「王毓閔」的答案
+            var answers_Wang = {
+                1: "黑", 2: "1月", 3: "拿鐵", 4: "貓", 5: "冬天",
+                6: "豆漿", 7: "A型", 8: "日本", 9: "愛情", 10: "11～5",
+                11: "生活科技", 12: "羽毛球", 13: "蜘蛛", 14: "Apple", 15: "日文",
+                16: "emo", 17: "🥚", 18: "摩羯", 19: "新年", 20: "雨天"
+            };
+
+            // ★ 「小Ken」的答案
+            var answers_Ken = {
+                1: "綠色", 2: "7月", 3: "奶茶", 4: "倉鼠", 5: "春天",
+                6: "奶茶", 7: "A型", 8: "日本", 9: "科幻", 10: "11點左右",
+                11: "英文", 12: "籃球", 13: "黑暗", 14: "Apple", 15: "流行",
+                16: "蛋餅", 17: "巨蟹", 18: "聖誕節", 19: "晴天", 20: "樹懶"
+            };
+
             var answerTable = {
                 1: answers_1,
                 4: answers_4,
@@ -1090,8 +1051,10 @@
                 if (currentZone === 'class6' && selectedNumber !== null) {
                     return answerTable[selectedNumber] || answers_27;
                 }
-                if (currentZone === 'other' && otherTarget === '佾') {
-                    return answers_Yi;
+                if (currentZone === 'other') {
+                    if (otherTarget === '佾') return answers_Yi;
+                    if (otherTarget === '王毓閔') return answers_Wang;
+                    if (otherTarget === '小Ken') return answers_Ken;
                 }
                 return answers_27;
             }
